@@ -1,0 +1,39 @@
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+t = np.linspace(0, 120, 1000)
+
+def sir_model(y, t, infectionRate, recoveryRate, population):
+    s, i, r = y
+
+    sGrowth = -infectionRate * s * i / population
+    iGrowth = infectionRate * s * i / population - recoveryRate * i
+    rGrowth = recoveryRate * i
+
+    return [sGrowth, iGrowth, rGrowth]
+
+def plot_sir(t, s, i, r):
+    plt.figure(figsize=(10, 6))
+    plt.plot(t, s, label='Susceptible')
+    plt.plot(t, i, label='Infected')
+    plt.plot(t, r, label='Recovered')
+    plt.xlabel('Days')
+    plt.ylabel('Population')
+    plt.title('SIR Model Simulation')
+    plt.legend()
+    plt.show()
+
+infectionRate = 0.3
+recoveryRate = 0.1
+population = 1000
+infected = 1
+
+y0 = [population - infected, infected, 0]
+
+sol = odeint(sir_model, y0, t, args=(infectionRate, recoveryRate, population))
+
+susceptible, infected, recovered = sol[:, 0], sol[:, 1], sol[:, 2]
+
+plot_sir(t, susceptible, infected, recovered)
